@@ -13,3 +13,10 @@ USAGE:
 
 For more information try --help
 ```
+
+## Todos
+
+- Run clippy and fmt
+- More tests
+- Force override of output file if it exists
+- Multithreading for reading dirs and files
