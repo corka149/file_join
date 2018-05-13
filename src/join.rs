@@ -7,7 +7,7 @@ use std::io;
 ///
 /// Reads a list of files and stores their content
 ///
-struct FileJoinerReader<'a> {
+pub struct FileJoinerReader<'a> {
     source: &'a [&'a str],
     target: &'a str,
     complete_content: String
@@ -39,7 +39,7 @@ impl<'a> FileJoinerReader<'a> {
 ///
 /// Write content to the given output file
 ///
-struct FileJoinerWriter<'a> {
+pub struct FileJoinerWriter<'a> {
     target: &'a str,
     complete_content: String
 }
