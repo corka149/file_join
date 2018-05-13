@@ -13,6 +13,8 @@ pub mod bootstrap {
     use join::{FileJoinerReader};
     use dir_reader::DirReader;
 
+    const SOURCE_DIR: &'static str = "source_dir";
+    const OUTPUT_FILE: &'static str = "output_file";
 
     struct ExtractedArgs {
         source_dir: String,
@@ -27,11 +29,11 @@ pub mod bootstrap {
         let matches = App:: new("A programm for merging files with ease\n")
             .version("0.2")
             .author("corka149 <corka149@mailbox.org")
-            .arg(Arg::with_name("dir")
+            .arg(Arg::with_name(SOURCE_DIR)
                 .help("Folder of wanted files")
                 .required(true)
                 .index(1))
-            .arg(Arg::with_name("out")
+            .arg(Arg::with_name(OUTPUT_FILE)
                 .help("Specifies the output file")
                 .required(true)
                 .index(2))
@@ -88,8 +90,8 @@ pub mod bootstrap {
     }
 
     fn extract_args_from_matches(arg_matches: ArgMatches) -> ExtractedArgs {
-        let source_dir = arg_matches.value_of("dir").expect("No source dir provided!");
-        let output_file = arg_matches.value_of("out").unwrap_or("new_file");
+        let source_dir = arg_matches.value_of(SOURCE_DIR).expect("No source dir provided!");
+        let output_file = arg_matches.value_of(OUTPUT_FILE).unwrap_or("new_file");
         let patterns = arg_matches.values_of_lossy("filter").unwrap_or(vec![String::from("")]);
         let recursive = arg_matches.is_present("recursive");
 

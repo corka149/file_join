@@ -16,7 +16,8 @@ For more information try --help
 
 ## Todos
 
+- !!! Improve argument naming and description
+- !!! Force override of output file if it exists
 - Run clippy and fmt
 - More tests
-- Force override of output file if it exists
 - Multithreading for reading dirs and files
