@@ -1,9 +1,8 @@
 use std::io;
-use std::fs::{self, DirEntry};
 use std::path::{Path, PathBuf};
 
 /// Reader of directory to get a list of files.
-struct DirReader<'a> {
+pub struct DirReader<'a> {
     path: &'a str,
     recursive: bool
 }
@@ -19,30 +18,41 @@ impl<'a> DirReader<'a> {
 
     /// List all files of a given directory and if set to true it will do it for every subfolder
     /// and their subfolders.
-    pub fn list_files(&self) -> io::Result<Vec<PathBuf>>{
+    pub fn list_files(&self) -> io::Result<Vec<String>>{
         let path = Path::new(&self.path);
-        let mut file_paths: Vec<PathBuf> = Vec::new();
+        let mut file_paths: Vec<String> = Vec::new();
         self.read_dir(path, &mut file_paths)?;
         Ok(file_paths)
     }
 
     /// Reads the content of a file and add all paths of found files to a vec.
     /// When the file reader should search recursive, it will do so.
-    fn read_dir(&self, path: &Path, file_paths: &mut Vec<PathBuf>) -> io::Result<()> {
+    fn read_dir(&self, path: &Path, file_paths: &mut Vec<String>) -> io::Result<()> {
         if path.is_dir() {
             for entry in path.read_dir()? {
                 let entry = entry?;
 
                 if entry.path().is_file() {
-                    file_paths.push(entry.path());
+                    let entry_path = entry.path();
+                    DirReader::add_extracted_path_string(entry_path, file_paths);
                 }
                 else if self.recursive && entry.path().is_dir() {
-                    self.read_dir(entry.path().as_path(), file_paths);
+                    let read_result = self.read_dir(entry.path().as_path(), file_paths);
+                    if let Err(e) = read_result {
+                      eprintln!("{}", e);
+                    };
                 }
             }
         }
 
         Ok(())
+    }
+
+    fn add_extracted_path_string(path_buf: PathBuf, file_paths: &mut Vec<String>) {
+        let path = path_buf.into_os_string();
+        if let Ok(value) = path.into_string() {
+            file_paths.push(value);
+        }
     }
 }
 
