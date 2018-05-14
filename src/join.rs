@@ -24,10 +24,13 @@ impl<'a> FileJoinerReader<'a> {
     }
 
     pub fn read_all_files(mut self) -> io::Result<FileJoinerWriter<'a>> {
-        for f_name in self.source {
+        for (i, f_name) in self.source.iter().enumerate() {
             let f = File::open(f_name)?;
             let mut reader = BufReader::new(f);
             reader.read_to_string(&mut self.complete_content)?;
+            if i < (self.source.len() - 1) {
+                self.complete_content.push('\n');
+            }
         }
         Ok(FileJoinerWriter {
             complete_content: self.complete_content,
@@ -53,12 +56,13 @@ impl<'a> FileJoinerWriter<'a> {
         }
     }
 
-    pub fn write_output_file(self) -> io::Result<()> {
+    pub fn write_output_file(self, overwrite: bool) -> io::Result<()> {
         let mut output_file = OpenOptions::new()
-            .create_new(true)
             .write(true)
+            .create_new(!overwrite)
+            .truncate(true)
             .open(&self.target)?;
-        let _ = output_file.write_all(self.complete_content.as_bytes());
+        let _ = output_file.write_all(self.complete_content.as_bytes())?;
         Ok(())
     }
 }

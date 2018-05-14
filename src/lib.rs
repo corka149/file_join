@@ -15,12 +15,16 @@ pub mod bootstrap {
 
     const SOURCE_DIR: &'static str = "source_dir";
     const OUTPUT_FILE: &'static str = "output_file";
+    const FILTER: &'static str = "filter";
+    const RECURSIVE: &'static str = "recursive";
+    const OVERWRITE: &'static str = "overwrite";
 
     struct ExtractedArgs {
         source_dir: String,
         output_file: String,
         patterns: Vec<String>,
-        recursive: bool
+        recursive: bool,
+        overwrite: bool
     }
 
     pub fn run() {
@@ -37,20 +41,23 @@ pub mod bootstrap {
                 .help("Specifies the output file")
                 .required(true)
                 .index(2))
-            .arg(Arg::with_name("filter")
+            .arg(Arg::with_name(FILTER)
                 .short("F")
-                .long("filter")
+                .long(FILTER)
                 .help("Pre-filter for joining with RegEx. Multiple filter are possible. \
                     They are applied in an AND-conjunction. By default nothing will be filtered.")
-                .required(false)
                 .multiple(true)
                 .takes_value(true))
-            .arg(Arg::with_name("recursive")
+            .arg(Arg::with_name(RECURSIVE)
                 .short("R")
-                .long("recursive")
+                .long(RECURSIVE)
                 .takes_value(false)
-                .required(false)
                 .help("Gather files recursively"))
+            .arg(Arg::with_name(OVERWRITE)
+                .short("O")
+                .long(OVERWRITE)
+                .takes_value(false)
+                .help(""))
             .get_matches();
 
         let extracted_args = extract_args_from_matches(matches);
@@ -83,7 +90,7 @@ pub mod bootstrap {
             Ok(fjw) => fjw,
             Err(e) => panic!(e)
         };
-        match file_join_writer.write_output_file() {
+        match file_join_writer.write_output_file(extracted_args.overwrite) {
             Ok(()) => println!("Finished joining!"),
             Err(e) => panic!(e)
         }
@@ -92,13 +99,15 @@ pub mod bootstrap {
     fn extract_args_from_matches(arg_matches: ArgMatches) -> ExtractedArgs {
         let source_dir = arg_matches.value_of(SOURCE_DIR).expect("No source dir provided!");
         let output_file = arg_matches.value_of(OUTPUT_FILE).unwrap_or("new_file");
-        let patterns = arg_matches.values_of_lossy("filter").unwrap_or(vec![String::from("")]);
-        let recursive = arg_matches.is_present("recursive");
+        let patterns = arg_matches.values_of_lossy(FILTER).unwrap_or(vec![String::from("")]);
+        let recursive = arg_matches.is_present(RECURSIVE);
+        let overwrite = arg_matches.is_present(OVERWRITE);
 
         ExtractedArgs{
             source_dir: String::from(source_dir),
             output_file: String::from(output_file),
             patterns,
+            overwrite,
             recursive
         }
     }
