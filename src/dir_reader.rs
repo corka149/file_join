@@ -23,6 +23,13 @@ impl<'a> DirReader<'a> {
 
   /// Reads the content of a file and add all paths of found files to a vec.
   /// When the file reader should search recursive, it will do so.
+  ///
+  /// Errors
+  /// --
+  /// The following errors could be thrown:
+  /// - Path does not exists
+  /// - Not the permissions for viewing content
+  /// - Path is not a directory
   fn read_dir(
     &self,
     path: &Path,
@@ -47,6 +54,7 @@ impl<'a> DirReader<'a> {
     Ok(())
   }
 
+  /// Helps to transform PathBuf to string for easier handling
   fn add_extracted_path_string(
     path_buf: PathBuf,
     file_paths: &mut Vec<String>,

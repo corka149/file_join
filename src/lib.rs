@@ -12,6 +12,7 @@ pub mod bootstrap {
   use filter::FileFilter;
   use join::FileJoinerReader;
   use dir_reader::DirReader;
+  use std::error;
 
   const SOURCE_DIR: &'static str = "source_dir";
   const OUTPUT_FILE: &'static str = "output_file";
@@ -27,6 +28,7 @@ pub mod bootstrap {
     overwrite: bool,
   }
 
+  /// Bootstrapper function of file_join
   pub fn run() {
     setup_panic!();
 
@@ -76,40 +78,37 @@ pub mod bootstrap {
 
     let extracted_args = extract_args_from_matches(matches);
 
-    run_join(extracted_args);
+    if let Err(e) = run_join(extracted_args) {
+        eprintln!("Problem occurred: {}", e.description());
+    };
   }
 
-  fn run_join(extracted_args: ExtractedArgs) {
+  /// Performs the actual joining operation based on the extracted arguments from the command line.
+  ///
+  /// Errors
+  /// ---
+  /// Types of errors are:
+  /// - io errors
+  /// - regex errors
+  fn run_join(extracted_args: ExtractedArgs) -> Result<(), Box<error::Error>> {
     // Get dir content
     let dir_reader =
       DirReader::new(&extracted_args.source_dir, extracted_args.recursive);
-    let files = match dir_reader.list_files() {
-      Ok(f) => f,
-      Err(e) => panic!(e),
-    };
+    let files = dir_reader.list_files()?;
 
     // Filter files
     let str_files = to_str_vec(&files);
     let str_patterns = to_str_vec(&extracted_args.patterns);
-    let file_filter = FileFilter::new(&str_files, &str_patterns);
-    let file_filter = match file_filter {
-      Ok(ff) => ff,
-      Err(e) => panic!(e),
-    };
+    let file_filter = FileFilter::new(&str_files, &str_patterns)?;
+
     let filtered_files = file_filter.apply_patterns();
 
     // Join file
     let file_join_reader =
       FileJoinerReader::new(&filtered_files, &extracted_args.output_file);
-    let read_result = file_join_reader.read_all_files();
-    let file_join_writer = match read_result {
-      Ok(fjw) => fjw,
-      Err(e) => panic!(e),
-    };
-    match file_join_writer.write_output_file(extracted_args.overwrite) {
-      Ok(()) => println!("Finished joining!"),
-      Err(e) => panic!(e),
-    }
+    let file_join_writer = file_join_reader.read_all_files()?;
+    file_join_writer.write_output_file(extracted_args.overwrite)?;
+    Ok(())
   }
 
   fn extract_args_from_matches(arg_matches: ArgMatches) -> ExtractedArgs {
