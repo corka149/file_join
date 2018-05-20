@@ -1,6 +1,4 @@
 extern crate clap;
-#[macro_use]
-extern crate human_panic;
 extern crate regex;
 
 pub mod filter;
@@ -30,7 +28,6 @@ pub mod bootstrap {
 
   /// Bootstrapper function of file_join
   pub fn run() {
-    setup_panic!();
 
     let matches = App::new("A programm for merging files with ease\n")
       .version("0.2")

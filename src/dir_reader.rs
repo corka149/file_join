@@ -75,7 +75,7 @@ mod tests {
   fn test_list_files() {
     let dir_reader = DirReader::new("test", false);
     remove_file("test/new_file.txt");
-    assert_eq!(3, dir_reader.list_files().unwrap().len());
+    assert_eq!(4, dir_reader.list_files().unwrap().len());
   }
 
 }
