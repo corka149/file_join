@@ -16,6 +16,11 @@ For more information try --help
 
 ## Todos
 
-- Run clippy and fmt
+- Replace panics as much as possible
+  - When listing files (list_files)
+  - When filtering files (match file_filter)
+  - When reading result (read_result)
+  - When writing back to file (write_output_file)
+- Run clippy
 - More tests
 - Multithreading for reading dirs and files
