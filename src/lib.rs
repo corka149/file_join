@@ -12,6 +12,8 @@ pub mod bootstrap {
   use dir_reader::DirReader;
   use std::error;
 
+  const VERSION: & str = env!("CARGO_PKG_VERSION");
+
   const SOURCE_DIR: & str = "source_dir";
   const OUTPUT_FILE: & str = "output_file";
   const FILTER: & str = "filter";
@@ -30,7 +32,7 @@ pub mod bootstrap {
   pub fn run() {
 
     let matches = App::new("A program for merging files with ease\n")
-      .version("0.5")
+      .version(VERSION)
       .author("corka149 <corka149@mailbox.org")
       .arg(
         Arg::with_name(SOURCE_DIR)
