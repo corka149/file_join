@@ -63,7 +63,7 @@ impl<'a> FileJoinerWriter<'a> {
       .create_new(!overwrite)
       .truncate(true)
       .open(&self.target)?;
-    let _ = output_file.write_all(self.complete_content.as_bytes())?;
+    output_file.write_all(self.complete_content.as_bytes())?;
     Ok(())
   }
 }

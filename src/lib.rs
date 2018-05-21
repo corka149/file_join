@@ -12,11 +12,11 @@ pub mod bootstrap {
   use dir_reader::DirReader;
   use std::error;
 
-  const SOURCE_DIR: &'static str = "source_dir";
-  const OUTPUT_FILE: &'static str = "output_file";
-  const FILTER: &'static str = "filter";
-  const RECURSIVE: &'static str = "recursive";
-  const OVERWRITE: &'static str = "overwrite";
+  const SOURCE_DIR: & str = "source_dir";
+  const OUTPUT_FILE: & str = "output_file";
+  const FILTER: & str = "filter";
+  const RECURSIVE: & str = "recursive";
+  const OVERWRITE: & str = "overwrite";
 
   struct ExtractedArgs {
     source_dir: String,
@@ -29,8 +29,8 @@ pub mod bootstrap {
   /// Bootstrapper function of file_join
   pub fn run() {
 
-    let matches = App::new("A programm for merging files with ease\n")
-      .version("0.2")
+    let matches = App::new("A program for merging files with ease\n")
+      .version("0.5")
       .author("corka149 <corka149@mailbox.org")
       .arg(
         Arg::with_name(SOURCE_DIR)
@@ -73,9 +73,9 @@ pub mod bootstrap {
       )
       .get_matches();
 
-    let extracted_args = extract_args_from_matches(matches);
+    let extracted_args = extract_args_from_matches(&matches);
 
-    if let Err(e) = run_join(extracted_args) {
+    if let Err(e) = run_join(&extracted_args) {
         eprintln!("Problem occurred: {}", e.description());
     };
   }
@@ -87,7 +87,7 @@ pub mod bootstrap {
   /// Types of errors are:
   /// - io errors
   /// - regex errors
-  fn run_join(extracted_args: ExtractedArgs) -> Result<(), Box<error::Error>> {
+  fn run_join(extracted_args: &ExtractedArgs) -> Result<(), Box<error::Error>> {
     // Get dir content
     let dir_reader =
       DirReader::new(&extracted_args.source_dir, extracted_args.recursive);
@@ -108,14 +108,14 @@ pub mod bootstrap {
     Ok(())
   }
 
-  fn extract_args_from_matches(arg_matches: ArgMatches) -> ExtractedArgs {
+  fn extract_args_from_matches(arg_matches: &ArgMatches) -> ExtractedArgs {
     let source_dir = arg_matches
       .value_of(SOURCE_DIR)
       .expect("No source dir provided!");
     let output_file = arg_matches.value_of(OUTPUT_FILE).unwrap_or("new_file");
     let patterns = arg_matches
       .values_of_lossy(FILTER)
-      .unwrap_or(vec![String::from("")]);
+      .unwrap_or_else(|| vec![String::from("")]);
     let recursive = arg_matches.is_present(RECURSIVE);
     let overwrite = arg_matches.is_present(OVERWRITE);
 

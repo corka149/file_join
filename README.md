@@ -16,6 +16,5 @@ For more information try --help
 
 ## Todos
 
-- Run clippy
 - More tests
 - Multithreading for reading dirs and files
