@@ -1,6 +1,6 @@
 # file_join
 
-A simple and fast cli-tool to join multiple files. It currently only supports files in UTF-8.
+A simple and fast cli-tool to join multiple files.
 
 ```bash
 corka@my-pc: file_join
@@ -17,7 +17,3 @@ For more information try --help
 ## Todos
 
 - More tests
-- Support various encodings
-  - ASCII
-  - ISO 8859-1
-  - ISO 8859-15

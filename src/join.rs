@@ -1,8 +1,5 @@
-use std::fs::File;
-use std::fs::OpenOptions;
-use std::io::prelude::*;
-use std::io::BufReader;
-use std::io;
+use std::fs::{File, OpenOptions};
+use std::io::{self, prelude::*, BufReader};
 
 ///
 /// Reads a list of files and stores their content
@@ -10,7 +7,7 @@ use std::io;
 pub struct FileJoinerReader<'a> {
   source: &'a [&'a str],
   target: &'a str,
-  complete_content: String,
+  complete_content: Vec<u8>,
 }
 
 impl<'a> FileJoinerReader<'a> {
@@ -18,7 +15,7 @@ impl<'a> FileJoinerReader<'a> {
     FileJoinerReader {
       source,
       target,
-      complete_content: String::new(),
+      complete_content: Vec::new(),
     }
   }
 
@@ -26,9 +23,9 @@ impl<'a> FileJoinerReader<'a> {
     for (i, f_name) in self.source.iter().enumerate() {
       let f = File::open(f_name)?;
       let mut reader = BufReader::new(f);
-      reader.read_to_string(&mut self.complete_content)?;
+      reader.read_to_end(&mut self.complete_content)?;
       if i < (self.source.len() - 1) {
-        self.complete_content.push('\n');
+        self.complete_content.push(b'\n');
       }
     }
     Ok(FileJoinerWriter {
@@ -36,24 +33,25 @@ impl<'a> FileJoinerReader<'a> {
       target: self.target,
     })
   }
+
 }
 
 ///
 /// Write content to the given output file
 ///
 pub struct FileJoinerWriter<'a> {
-  target: &'a str,
-  complete_content: String,
+  complete_content: Vec<u8>,
+  target: &'a str
 }
 
 impl<'a> FileJoinerWriter<'a> {
   pub fn new(
-    complete_content: String,
+    complete_content: Vec<u8>,
     target: &'a str,
   ) -> FileJoinerWriter<'a> {
     FileJoinerWriter {
-      target,
       complete_content,
+      target
     }
   }
 
@@ -63,7 +61,7 @@ impl<'a> FileJoinerWriter<'a> {
       .create_new(!overwrite)
       .truncate(true)
       .open(&self.target)?;
-    output_file.write_all(self.complete_content.as_bytes())?;
+    output_file.write_all(&self.complete_content)?;
     Ok(())
   }
 }
