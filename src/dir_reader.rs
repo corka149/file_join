@@ -35,26 +35,24 @@ impl<'a> DirReader<'a> {
     path: &Path,
     file_paths: &mut Vec<String>,
   ) -> io::Result<()> {
-    if path.is_dir() {
-      for entry in path.read_dir()? {
-        let entry = entry?;
+    for entry in path.read_dir()? {
+      let entry = entry?;
 
-        if entry.path().is_file() {
-          let entry_path = entry.path();
-          DirReader::add_extracted_path_string(entry_path, file_paths);
-        } else if self.recursive && entry.path().is_dir() {
-          let read_result = self.read_dir(entry.path().as_path(), file_paths);
-          if let Err(e) = read_result {
-            eprintln!("{}", e);
-          };
-        }
+      if entry.path().is_file() {
+        let entry_path = entry.path();
+        DirReader::add_extracted_path_string(entry_path, file_paths);
+      } else if self.recursive && entry.path().is_dir() {
+        let read_result = self.read_dir(entry.path().as_path(), file_paths);
+        if let Err(e) = read_result {
+          eprintln!("{}", e);
+        };
       }
     }
 
     Ok(())
   }
 
-  /// Helps to transform PathBuf to string for easier handling
+  /// Helps to transform PathBuf to string for easier handling and adds it to a given vector
   fn add_extracted_path_string(
     path_buf: PathBuf,
     file_paths: &mut Vec<String>,
@@ -78,4 +76,17 @@ mod tests {
     assert_eq!(4, dir_reader.list_files().unwrap().len());
   }
 
+  #[test]
+  fn test_list_recursive_files() {
+    let dir_reader = DirReader::new("test", true);
+    remove_file("test/new_file.txt");
+    assert_eq!(6, dir_reader.list_files().unwrap().len());
+  }
+
+  #[test]
+  #[should_panic(expected = "No such file or directory")]
+  fn test_list_files_of_not_existing_dir() {
+    let dir_reader = DirReader::new("does_not_exist", false);
+    dir_reader.list_files().unwrap();
+  }
 }

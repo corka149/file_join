@@ -1,8 +1,9 @@
 [package]
 name = "file_join"
-version = "0.4.1"
+version = "1.0.0"
 authors = ["corka149 <corka149@mailbox.org>"]
 
 [dependencies]
 clap = "2.31.2"
 regex = "1.0.0"
+assert_cli = "0.6.1"

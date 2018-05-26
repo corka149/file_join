@@ -6,14 +6,15 @@ A simple and fast cli-tool to join multiple files.
 corka@my-pc: file_join
 
 error: The following required arguments were not provided:
-    --dir <DIR>
+    <source_dir>
+    <output_file>
 
 USAGE:
-    main [OPTIONS] --dir <DIR>
+    file_join [FLAGS] [OPTIONS] <source_dir> <output_file>
 
 For more information try --help
 ```
 
 ## Todos
 
-- More tests
+- Compile for windows (any maybe Mac OS)

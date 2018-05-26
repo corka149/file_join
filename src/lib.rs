@@ -11,14 +11,15 @@ pub mod bootstrap {
   use join::FileJoinerReader;
   use dir_reader::DirReader;
   use std::error;
+  use std::process;
 
-  const VERSION: & str = env!("CARGO_PKG_VERSION");
+  const VERSION: &str = env!("CARGO_PKG_VERSION");
 
-  const SOURCE_DIR: & str = "source_dir";
-  const OUTPUT_FILE: & str = "output_file";
-  const FILTER: & str = "filter";
-  const RECURSIVE: & str = "recursive";
-  const OVERWRITE: & str = "overwrite";
+  const SOURCE_DIR: &str = "source_dir";
+  const OUTPUT_FILE: &str = "output_file";
+  const FILTER: &str = "filter";
+  const RECURSIVE: &str = "recursive";
+  const OVERWRITE: &str = "overwrite";
 
   struct ExtractedArgs {
     source_dir: String,
@@ -30,7 +31,6 @@ pub mod bootstrap {
 
   /// Bootstrapper function of file_join
   pub fn run() {
-
     let matches = App::new("A program for merging files with ease\n")
       .version(VERSION)
       .author("corka149 <corka149@mailbox.org")
@@ -78,7 +78,8 @@ pub mod bootstrap {
     let extracted_args = extract_args_from_matches(&matches);
 
     if let Err(e) = run_join(&extracted_args) {
-        eprintln!("Problem occurred: {}", e.description());
+      eprintln!("Problem occurred: {}", e.description());
+      process::exit(1);
     };
   }
 

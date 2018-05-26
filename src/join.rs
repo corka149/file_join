@@ -1,5 +1,5 @@
 use std::fs::{File, OpenOptions};
-use std::io::{self, prelude::*, BufReader};
+use std::io::{self, BufReader, prelude::*};
 
 ///
 /// Reads a list of files and stores their content
@@ -33,7 +33,6 @@ impl<'a> FileJoinerReader<'a> {
       target: self.target,
     })
   }
-
 }
 
 ///
@@ -41,7 +40,7 @@ impl<'a> FileJoinerReader<'a> {
 ///
 pub struct FileJoinerWriter<'a> {
   complete_content: Vec<u8>,
-  target: &'a str
+  target: &'a str,
 }
 
 impl<'a> FileJoinerWriter<'a> {
@@ -51,7 +50,7 @@ impl<'a> FileJoinerWriter<'a> {
   ) -> FileJoinerWriter<'a> {
     FileJoinerWriter {
       complete_content,
-      target
+      target,
     }
   }
 
